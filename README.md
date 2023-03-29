@@ -38,7 +38,10 @@ npm install
 # development
 npm start
 ```
-Open the web-browser and go to http://localhost:3000/artist/ARTIST_NAME/DESIRED_FILE_NAME
+Open the web-browser and go to 
+```bash
+http://localhost:3000/artist/ARTIST_NAME/DESIRED_FILE_NAME
+```
 
 ## Test
 <p>
