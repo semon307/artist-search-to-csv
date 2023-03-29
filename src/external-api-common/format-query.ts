@@ -1,4 +1,5 @@
+// enum for possible format specification
 export enum FORMAT_QUERY {
-  JSON = 'format=json',
+  JSON = '&format=json',
   XML = '',
 }

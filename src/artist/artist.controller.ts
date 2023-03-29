@@ -1,67 +1,43 @@
 import {
-  Body,
+  BadRequestException,
   Controller,
-  Delete,
   Get,
-  HttpException,
-  HttpStatus,
-  NotFoundException,
+  InternalServerErrorException,
   Param,
-  Patch,
-  Post,
-  UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { IdValidationPipe } from '../pipes/id-validation.pipe';
-import { PARTY_NOT_FOUND } from './constants/party-not-found';
-import { CreatePartyDto } from './dto/create-party.dto';
-import { PartyModel } from './party.model/party.model';
-import { PartyService } from './party.service';
+import { QUERY_VALIDATION_ERROR } from './constants/query-validation-error';
+import { instance } from '../external-api-common/instance';
+import { makeRequestUrl } from '../external-api-common/make-request-url';
+import { ArtistService } from './artist.service';
 
-@Controller('party')
-export class PartyController {
-  constructor(private readonly partyService: PartyService) {}
-
-  @UseGuards(JwtAuthGuard)
-  @Post('create')
-  async create(@Body() dto: CreatePartyDto) {
-    return this.partyService.create(dto);
-  }
-
-  @Get(':id')
-  async get(@Param('id', IdValidationPipe) id: string) {
-    const party = await this.partyService.findById(id);
-    if (!party) {
-      throw new NotFoundException(PARTY_NOT_FOUND);
-    }
-    return party;
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('find/all')
-  async find() {
-    return this.partyService.findAll();
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  async delete(@Param('id', IdValidationPipe) id: string) {
-    const deletedProfile = await this.partyService.deleteById(id);
-    if (!deletedProfile) {
-      throw new HttpException(PARTY_NOT_FOUND, HttpStatus.NOT_FOUND);
-    }
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Patch(':id')
-  async patch(
-    @Param('id', IdValidationPipe) id: string,
-    @Body() dto: PartyModel,
+@Controller('artist')
+export class ArtistController {
+  constructor(private readonly artistService: ArtistService) {}
+  @Get(':query?/:fileName?')
+  async get(
+    @Param('query') query: string = null,
+    @Param('fileName') fileName: string = null,
   ) {
-    const party = await this.partyService.updateById(id, dto);
-    if (!party) {
-      throw new NotFoundException(PARTY_NOT_FOUND);
+    if (!query) {
+      throw new BadRequestException(QUERY_VALIDATION_ERROR);
     }
-    return party;
+
+    let res;
+
+    try {
+      res = await instance.get(makeRequestUrl(query));
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException('Internal server error');
+    }
+
+    await this.artistService.writeArtistsInCSVFile(
+      res.data.results.artistmatches.artist,
+      fileName,
+    );
+
+    return this.artistService.getArtistNames(
+      res.data.results.artistmatches.artist,
+    );
   }
 }

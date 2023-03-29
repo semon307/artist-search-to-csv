@@ -1,21 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TypegooseModule } from 'nestjs-typegoose';
-import { PartyController } from './party.controller';
-import { PartyModel } from './party.model/party.model';
-import { PartyService } from './party.service';
+import { ArtistController } from './artist.controller';
+import { ArtistService } from './artist.service';
 
 @Module({
-  controllers: [PartyController],
-  imports: [
-    TypegooseModule.forFeature([
-      {
-        typegooseClass: PartyModel,
-        schemaOptions: {
-          collection: 'Party',
-        },
-      },
-    ]),
-  ],
-  providers: [PartyService],
+  controllers: [ArtistController],
+  imports: [],
+  providers: [ArtistService],
 })
-export class PartyModule {}
+export class ArtistModule {}
