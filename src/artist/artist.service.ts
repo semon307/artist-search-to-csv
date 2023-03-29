@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { createObjectCsvWriter } from 'csv-writer';
 import { Artist } from './artist';
+import { ObjectEncodingOptions, promises as fs } from 'fs';
 
 @Injectable()
 export class ArtistService {
@@ -25,6 +26,15 @@ export class ArtistService {
     return artist.name;
   }
 
+  // method for reading json file
+  async readFile(
+    path: string,
+    options: ObjectEncodingOptions & { flag?: string } = { encoding: 'utf-8' },
+  ): Promise<string | Buffer> {
+    return fs.readFile(path, options);
+  }
+
+  // method for creating CSV file, based on last.fm response
   async writeArtistsInCSVFile(artists: Array<Artist>, userFileName: string) {
     const fileName = userFileName || 'test';
 
@@ -39,9 +49,30 @@ export class ArtistService {
       ],
     });
 
-    csvWriter.writeRecords(artists.map(this.mapArtistForRecord)).then((res) => {
+    csvWriter.writeRecords(artists.map(this.mapArtistForRecord)).then(() => {
       console.log('...Done!');
     });
+  }
+
+  async getRandomMockArtistsNames() {
+    // reading json file from the root folder
+    const response = await this.readFile('./mockArtists.json');
+    const artistsNames = JSON.parse(response as string);
+    // creating an array with random length and random elements from json file
+    const result: Array<string> = [];
+    const indexes = new Set<number>();
+    const count = Math.random() * artistsNames.length;
+
+    while (indexes.size < count) {
+      const index = Math.floor(Math.random() * artistsNames.length);
+      indexes.add(index);
+    }
+
+    for (const index of indexes) {
+      result.push(artistsNames[index]);
+    }
+
+    return result;
   }
 
   getArtistNames(artists: Array<any>) {

@@ -31,6 +31,10 @@ export class ArtistController {
       throw new InternalServerErrorException('Internal server error');
     }
 
+    if (!res.data.results.artistmatches.artist.length) {
+      return this.artistService.getRandomMockArtistsNames();
+    }
+
     await this.artistService.writeArtistsInCSVFile(
       res.data.results.artistmatches.artist,
       fileName,
