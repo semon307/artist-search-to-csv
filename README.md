@@ -19,24 +19,24 @@ each artist that matches the client's query.
 <p>Clone this repository:</p>
 
 ```bash
-$ git clone https://github.com/semon307/artist-search-to-csv.git
+git clone https://github.com/semon307/artist-search-to-csv.git
 ```
 
 <p>Install dependencies</p>
 
 ```bash
-$ cd artist-search-to-csv
+cd artist-search-to-csv
 ```
 
 ```bash
-$ npm install
+npm install
 ```
 
 ## Running the app
 
 ```bash
 # development
-$ npm start
+npm start
 ```
 Open the web-browser and go to http://localhost:3000/artist/ARTIST_NAME/DESIRED_FILE_NAME
 
@@ -48,7 +48,7 @@ Open the web-browser and go to http://localhost:3000/artist/ARTIST_NAME/DESIRED_
 ```bash
 
 # e2e tests
-$ npm run test:e2e
+npm run test:e2e
 ```
 
 ## Stay in touch
